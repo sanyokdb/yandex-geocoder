@@ -360,6 +360,7 @@ add_action('admin_post_save_yandex_pickup_points', function () {
                     'address' => sanitize_text_field($p['address'] ?? ''),
                     'work_start' => sanitize_text_field($p['work_start'] ?? ''),
                     'work_end' => sanitize_text_field($p['work_end'] ?? ''),
+                    'is_closed_on_sunday' => !empty($p['is_closed_on_sunday']),
                     'coords' => [floatval($coords[0]), floatval($coords[1])],
                 ];
             }
@@ -642,6 +643,7 @@ function yandex_delivery_page() {
                 const defaultName = p.name || ('Точка самовывоза ' + (pointCounter++));
                 const workStart = p.work_start || p.workStart || '';
                 const workEnd = p.work_end || p.workEnd || '';
+                const closedOnSunday = p.is_closed_on_sunday ? 'checked' : '';
                 block.innerHTML = `
 <h3 class="zone-title">${defaultName}</h3>
 <label>Название:</label>
@@ -658,6 +660,12 @@ function yandex_delivery_page() {
     <input type="text" class="pp-work-end" value="${workEnd}" placeholder="например: 00:00" style="width: 100%;">
             </div>
         </div>
+<div style="margin-top: 7px;">
+  <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+    <input type="checkbox" class="pp-closed-on-sunday" ${closedOnSunday}>
+    Выходной по воскресеньям
+  </label>
+</div>
 <textarea class="pp-coords" style="width: 100%; height: 40px; margin-top: 7px;" readonly></textarea>
 <button type="button" class="button pp-delete" style=" background: #d10606; color: #fff; border: none; ">Удалить точку</button>
 <hr>
@@ -700,7 +708,7 @@ function yandex_delivery_page() {
             }
 
             function addPointAt(coords) {
-                const p = { id: uid(), name: '', address: '', work_start: '', work_end: '', coords };
+                const p = { id: uid(), name: '', address: '', work_start: '', work_end: '', is_closed_on_sunday: false, coords };
                 p.placemark = new ymaps.Placemark(coords, {}, { draggable: true });
                 map.geoObjects.add(p.placemark);
                 points.push(p);
@@ -725,6 +733,7 @@ function yandex_delivery_page() {
                             address: sp.address || '',
                             work_start: sp.work_start || legacy.start || '',
                             work_end: sp.work_end || legacy.end || '',
+                            is_closed_on_sunday: !!sp.is_closed_on_sunday,
                             coords: coords
                         };
                         p.placemark = new ymaps.Placemark(coords, {}, { draggable: true });
@@ -756,6 +765,7 @@ function yandex_delivery_page() {
                         address: p.block.querySelector('.pp-address').value,
                         work_start: p.block.querySelector('.pp-work-start')?.value || '',
                         work_end: p.block.querySelector('.pp-work-end')?.value || '',
+                        is_closed_on_sunday: p.block.querySelector('.pp-closed-on-sunday')?.checked || false,
                         coords: p.placemark.geometry.getCoordinates()
                     }));
                     document.getElementById('pickup_points_data_field').value = JSON.stringify(data);
@@ -1673,6 +1683,14 @@ function ygp_find_pickup_point(string $id): ?array {
  * Логика соответствует frontend.js getPickupStatus.
  */
 function ygp_is_pickup_point_open(array $point): bool {
+    $tz = function_exists('wp_timezone') ? wp_timezone() : null;
+    $now = $tz ? new DateTime('now', $tz) : new DateTime('now');
+
+    // Проверка выходного по воскресеньям
+    if (!empty($point['is_closed_on_sunday']) && (int)$now->format('w') === 0) {
+        return false;
+    }
+
     $start = trim((string)($point['work_start'] ?? ''));
     $end   = trim((string)($point['work_end'] ?? ''));
     if (!$start && !$end && !empty($point['work_hours'])) {
@@ -1686,8 +1704,6 @@ function ygp_is_pickup_point_open(array $point): bool {
     $startMin = (int)$ms[1] * 60 + (int)$ms[2];
     $endMin   = (int)$me[1] * 60 + (int)$me[2];
     if ($startMin === $endMin) return true; // круглосуточно
-    $tz = function_exists('wp_timezone') ? wp_timezone() : null;
-    $now = $tz ? new DateTime('now', $tz) : new DateTime('now');
     $nowMin = (int)$now->format('G') * 60 + (int)$now->format('i');
     if ($startMin < $endMin) {
         return $nowMin >= $startMin && $nowMin < $endMin;
