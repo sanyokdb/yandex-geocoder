@@ -1,0 +1,92 @@
+:root {
+  --ygp-card-bg: #fff;
+  --ygp-card-br: 12px;
+  --ygp-card-bd: #e5e7eb;
+  --ygp-muted: #6b7280;
+  --ygp-gap: 12px;
+}
+
+.ygp-enhanced .ygp-card{
+  background:#fff;border:1px solid var(--ygp-card-bd);
+  border-radius:var(--ygp-card-br);
+  padding:16px;margin:7px 0;box-shadow:0 1px 2px rgba(0,0,0,.03);
+}
+
+/* Заголовок */
+.ygp-enhanced h3.zone-title {
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+/* Шапка: слева (название+цвет), справа — Удалить */
+.ygp-enhanced .ygp-header{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  gap:16px;margin-bottom:6px;
+}
+.ygp-enhanced .ygp-header-left{
+  display:flex;gap:14px;align-items:flex-end;flex:1;
+}
+.ygp-enhanced .ygp-name,
+.ygp-enhanced .ygp-color{display:flex;flex-direction:column;gap:2px;}
+.ygp-enhanced .ygp-name{flex:1;min-width:70px}
+.ygp-enhanced .ygp-name input[type="text"]{height:26px;width:100%}
+.ygp-enhanced .ygp-color input[type="color"]{height:30px;width:30px;padding:0}
+.ygp-enhanced .ygp-header-right{padding-top: 20px;}
+.ygp-enhanced .ygp-danger{background:#ef4444!important;border-color:#ef4444!important;color:#fff!important}
+
+/* Сетка полей */
+.ygp-enhanced .ygp-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(60px,1fr));
+  gap:12px 16px;align-items:start;margin-bottom:0px;
+}
+.ygp-enhanced .ygp-grid.ygp-grid-2{
+  grid-template-columns:repeat(2,minmax(120px,1fr));
+}
+.ygp-enhanced .ygp-full{
+  grid-column:1 / -1;
+}
+.ygp-enhanced .ygp-grid label{font-size:12px;color:var(--ygp-muted);display:block;margin-bottom:2px}
+.ygp-enhanced .ygp-grid input[type="text"],
+.ygp-enhanced .ygp-grid input[type="number"]{height:26px;width:100%}
+
+/* Координаты под спойлером  (Убраны)*/
+.ygp-enhanced .ygp-details {
+  display: none !important;
+}
+
+/* Координаты под спойлером
+.ygp-enhanced .ygp-details{border-top:1px dashed #e5e7eb;padding-top:10px}
+.ygp-enhanced .ygp-details > summary{
+  cursor:pointer;font-weight:600;user-select:none;outline:none;margin-bottom:8px;
+}
+.ygp-enhanced .ygp-details-box textarea.ygp-coords{width:100%;min-height:80px}  */
+
+/* Кнопка добавить*/
+.ygp-enhanced .ygp-btn-add{padding-right: 20px;padding-left: 20px;border-radius: 10px;padding-top: 3px;padding-bottom: 3px;font-size: 14px;}
+
+/* Кнопка Сохранить зоны доставки */
+.ygp-enhanced .ygp-btn-save {
+  padding-right: 20px;
+  padding-left: 20px;
+  border-radius: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  font-size: 14px;
+}
+
+/* Самовывоз: скрываем координаты (не должны мешать) */
+.ygp-enhanced #pickupPointsContainer textarea.pp-coords {
+  display: none !important;
+}
+
+/* Самовывоз: аккуратнее поля */
+.ygp-enhanced #pickupPointsContainer .zone-block input[type="text"]{
+  width: 100%;
+}
+
+/* Адаптив */
+@media (max-width:1200px){
+  .ygp-enhanced .ygp-grid{grid-template-columns:1fr}
+  .ygp-enhanced .ygp-header{flex-direction:column;align-items:stretch}
+  .ygp-enhanced .ygp-header-left{flex-wrap:wrap}
+}
