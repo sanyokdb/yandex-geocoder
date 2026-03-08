@@ -332,6 +332,8 @@ add_action('admin_post_save_yandex_zones', function () {
         if (is_array($zones)) {
             foreach ($zones as &$zone) {
                 $zone['name'] = sanitize_text_field($zone['name'] ?? '');
+                $min_raw = $zone['min_total'] ?? '';
+                $zone['min_total'] = ($min_raw !== '') ? max(0.0, floatval($min_raw)) : 0.0;
             }
             update_option('yandex_delivery_zones', $zones);
         }
@@ -502,8 +504,8 @@ function yandex_delivery_page() {
 <label>Цвет:</label>
 <input type="color" value="${z.color}" class="zone-color"><br>
 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-    <div style="flex: 1;"> <label>Цена доставки:</label>     <input type="text" class="zone-price" style="width: 100%;" value="${z.price ?? 0}">      </div>
-    <div style="flex: 1;"> <label>Бесп. от суммы заказа:</label> <input type="text" class="zone-min" style="width: 100%;" value="${(z.min_total !== undefined && z.min_total !== '') ? z.min_total : ''}" placeholder="Пусто = фикс. цена"> </div>
+    <div style="flex: 1;"> <label>Цена доставки:</label>     <input type="number" class="zone-price" style="width: 100%;" value="${z.price ?? 0}" min="0" step="0.01">      </div>
+    <div style="flex: 1;"> <label>Мин. сумма заказа:</label> <input type="number" class="zone-min" style="width: 100%;" value="${z.min_total ?? 0}" min="0" step="0.01" placeholder="0"> </div>
     <div style="flex: 1;"> <label>Время доставки:</label>    <input type="text" class="zone-time" style="width: 100%;" value="${z.time ?? ''}">  </div>
 </div>
 <textarea class="zone-coords" style="width: 100%; height: 46px; margin-top: 7px;" readonly>${JSON.stringify(z.coords)}</textarea>
@@ -544,8 +546,8 @@ function yandex_delivery_page() {
 <label>Цвет:</label>
 <input type="color" value="${color}" class="zone-color"><br>
 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-    <div style="flex: 1;"> <label>Цена доставки:</label>     <input type="text" class="zone-price" style="width: 100%;" value="0">  </div>
-    <div style="flex: 1;"> <label>Бесп. от суммы заказа:</label> <input type="text" class="zone-min" style="width: 100%;" value="" placeholder="Пусто = фикс. цена"> </div>
+    <div style="flex: 1;"> <label>Цена доставки:</label>     <input type="number" class="zone-price" style="width: 100%;" value="0" min="0" step="0.01">  </div>
+    <div style="flex: 1;"> <label>Мин. сумма заказа:</label> <input type="number" class="zone-min" style="width: 100%;" value="" min="0" step="0.01" placeholder="0"> </div>
     <div style="flex: 1;"> <label>Время доставки:</label>    <input type="text" class="zone-time" style="width: 100%;" value="">    </div>
 </div>
 <textarea class="zone-coords" style="width: 100%; height: 46px; margin-top: 7px;" readonly></textarea>
