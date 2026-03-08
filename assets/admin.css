@@ -84,6 +84,18 @@
   width: 100%;
 }
 
+/* Самовывоз: чекбокс "Воскресенье - выходной" */
+.ygp-enhanced .ygp-sunday-off-wrap {
+  margin-top: 4px;
+}
+.ygp-enhanced .ygp-sunday-off-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
 /* Адаптив */
 @media (max-width:1200px){
   .ygp-enhanced .ygp-grid{grid-template-columns:1fr}

@@ -360,6 +360,7 @@ add_action('admin_post_save_yandex_pickup_points', function () {
                     'address' => sanitize_text_field($p['address'] ?? ''),
                     'work_start' => sanitize_text_field($p['work_start'] ?? ''),
                     'work_end' => sanitize_text_field($p['work_end'] ?? ''),
+                    'sunday_off' => !empty($p['sunday_off']),
                     'coords' => [floatval($coords[0]), floatval($coords[1])],
                 ];
             }
@@ -642,6 +643,7 @@ function yandex_delivery_page() {
                 const defaultName = p.name || ('Точка самовывоза ' + (pointCounter++));
                 const workStart = p.work_start || p.workStart || '';
                 const workEnd = p.work_end || p.workEnd || '';
+                const sundayOff = p.sunday_off ? 'checked' : '';
                 block.innerHTML = `
 <h3 class="zone-title">${defaultName}</h3>
 <label>Название:</label>
@@ -658,6 +660,7 @@ function yandex_delivery_page() {
     <input type="text" class="pp-work-end" value="${workEnd}" placeholder="например: 00:00" style="width: 100%;">
             </div>
         </div>
+<label class="pp-sunday-off-label"><input type="checkbox" class="pp-sunday-off" ${sundayOff}> Воскресенье - выходной</label>
 <textarea class="pp-coords" style="width: 100%; height: 40px; margin-top: 7px;" readonly></textarea>
 <button type="button" class="button pp-delete" style=" background: #d10606; color: #fff; border: none; ">Удалить точку</button>
 <hr>
@@ -700,7 +703,7 @@ function yandex_delivery_page() {
             }
 
             function addPointAt(coords) {
-                const p = { id: uid(), name: '', address: '', work_start: '', work_end: '', coords };
+                const p = { id: uid(), name: '', address: '', work_start: '', work_end: '', sunday_off: false, coords };
                 p.placemark = new ymaps.Placemark(coords, {}, { draggable: true });
                 map.geoObjects.add(p.placemark);
                 points.push(p);
@@ -725,6 +728,7 @@ function yandex_delivery_page() {
                             address: sp.address || '',
                             work_start: sp.work_start || legacy.start || '',
                             work_end: sp.work_end || legacy.end || '',
+                            sunday_off: sp.sunday_off || false,
                             coords: coords
                         };
                         p.placemark = new ymaps.Placemark(coords, {}, { draggable: true });
@@ -756,6 +760,7 @@ function yandex_delivery_page() {
                         address: p.block.querySelector('.pp-address').value,
                         work_start: p.block.querySelector('.pp-work-start')?.value || '',
                         work_end: p.block.querySelector('.pp-work-end')?.value || '',
+                        sunday_off: p.block.querySelector('.pp-sunday-off')?.checked || false,
                         coords: p.placemark.geometry.getCoordinates()
                     }));
                     document.getElementById('pickup_points_data_field').value = JSON.stringify(data);

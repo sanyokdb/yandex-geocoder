@@ -132,6 +132,7 @@
       const workEnd = zone.querySelector('input.pp-work-end');
       const minOrder = zone.querySelector('input.pp-min-order');
       const deliveryPrice = zone.querySelector('input.pp-delivery-price');
+      const sundayOff = zone.querySelector('input.pp-sunday-off');
       const delBtn = zone.querySelector('button.pp-delete');
 
       const header = document.createElement('div');
@@ -173,6 +174,17 @@
         cell('Мин. заказ:', minOrder),
         cell('Цена доставки:', deliveryPrice)
       ].forEach(x => x && grid.appendChild(x));
+
+      if (sundayOff) {
+        const sundayWrap = document.createElement('div');
+        sundayWrap.className = 'ygp-full ygp-sunday-off-wrap';
+        const sundayLabel = document.createElement('label');
+        sundayLabel.className = 'ygp-sunday-off-label';
+        sundayLabel.appendChild(sundayOff);
+        sundayLabel.appendChild(document.createTextNode(' Воскресенье - выходной'));
+        sundayWrap.appendChild(sundayLabel);
+        grid.appendChild(sundayWrap);
+      }
 
       const keepTitle = title ? title : null;
       zone.innerHTML = '';

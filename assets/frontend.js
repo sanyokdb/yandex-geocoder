@@ -525,6 +525,11 @@
 
     function getPickupStatus(p) {
       const { start, end } = getWorkHours(p);
+      const now = new Date();
+      const isSunday = now.getDay() === 0;
+      if (isSunday && p.sunday_off) {
+        return { isOpen: false, text: 'Закрыто - выходной', canSelect: false, start, end };
+      }
       const startMin = parseTimeToMinutes(start);
       const endMin = parseTimeToMinutes(end);
       if (startMin === null || endMin === null) {
@@ -533,7 +538,6 @@
       if (startMin === endMin) {
         return { isOpen: true, text: 'Круглосуточно', canSelect: true, start, end };
       }
-      const now = new Date();
       const nowMin = now.getHours() * 60 + now.getMinutes();
       let isOpen = false;
       if (startMin < endMin) {
